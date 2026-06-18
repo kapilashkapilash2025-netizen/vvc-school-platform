@@ -1,0 +1,458 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  PRINCIPAL
+  TEACHER_ADMIN
+  MEDIA_TEAM
+  SPORTS_ADMIN
+  STUDENT_EDITOR
+  VIEWER
+}
+
+enum ContentStatus {
+  DRAFT
+  REVIEW
+  APPROVED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum NoticePriority {
+  NORMAL
+  IMPORTANT
+  URGENT
+}
+
+enum EventStatus {
+  UPCOMING
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+enum SportsMeetStatus {
+  UPCOMING
+  LIVE
+  COMPLETED
+}
+
+enum SportsEventStatus {
+  SCHEDULED
+  LIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  DOCUMENT
+}
+
+enum AchievementType {
+  ACADEMIC
+  SPORTS
+  ARTS
+  CULTURAL
+  COMMUNITY
+  OTHER
+}
+
+enum AchievementLevel {
+  SCHOOL
+  ZONAL
+  PROVINCIAL
+  NATIONAL
+  INTERNATIONAL
+}
+
+enum AIProvider {
+  OPENAI
+  ANTHROPIC
+  GEMINI
+  OLLAMA
+  MOCK
+}
+
+enum AITaskType {
+  POST_WRITER
+  NOTICE_WRITER
+  EVENT_REPORT
+  TRANSLATION
+  ALT_TEXT
+  SPORTS_SUMMARY
+  MODERATION
+}
+
+model User {
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  passwordHash String?
+  role         UserRole  @default(VIEWER)
+  avatar       String?
+  phone        String?
+  isActive     Boolean   @default(true)
+  lastLogin    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  posts           Post[]         @relation("AuthorPosts")
+  reviewedPosts   Post[]         @relation("ReviewerPosts")
+  notices         Notice[]       @relation("NoticeCreator")
+  approvedNotices Notice[]       @relation("NoticeApprover")
+  events          Event[]        @relation("EventCreator")
+  uploads         MediaItem[]
+  downloads       Download[]
+  achievements    Achievement[]
+  activityLogs    ActivityLog[]
+  aiRequests      AIRequest[]
+  registrations   Registration[]
+
+  @@map("users")
+}
+
+model Category {
+  id     String @id @default(cuid())
+  nameTa String
+  nameEn String
+  slug   String @unique
+  type   String
+
+  posts  Post[]
+  events Event[]
+
+  @@map("categories")
+}
+
+model Post {
+  id            String        @id @default(cuid())
+  titleTa       String
+  titleEn       String
+  slug          String        @unique
+  contentTa     String       
+  contentEn     String       
+  excerptTa     String?
+  excerptEn     String?
+  categoryId    String?
+  featuredImage String?
+  status        ContentStatus @default(DRAFT)
+  authorId      String
+  reviewerId    String?
+  publishedAt   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  category Category? @relation(fields: [categoryId], references: [id])
+  author   User      @relation("AuthorPosts", fields: [authorId], references: [id])
+  reviewer User?     @relation("ReviewerPosts", fields: [reviewerId], references: [id])
+  tags     PostTag[]
+
+  @@map("posts")
+}
+
+model Tag {
+  id    String    @id @default(cuid())
+  name  String    @unique
+  slug  String    @unique
+  posts PostTag[]
+
+  @@map("tags")
+}
+
+model PostTag {
+  postId String
+  tagId  String
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+  @@map("post_tags")
+}
+
+model Notice {
+  id            String         @id @default(cuid())
+  titleTa       String
+  titleEn       String
+  contentTa     String        
+  contentEn     String        
+  priority      NoticePriority @default(NORMAL)
+  isPinned      Boolean        @default(false)
+  expiresAt     DateTime?
+  attachmentUrl String?
+  status        ContentStatus  @default(DRAFT)
+  createdById   String
+  approvedById  String?
+  publishedAt   DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  createdBy  User  @relation("NoticeCreator", fields: [createdById], references: [id])
+  approvedBy User? @relation("NoticeApprover", fields: [approvedById], references: [id])
+
+  @@map("notices")
+}
+
+model Event {
+  id                  String      @id @default(cuid())
+  titleTa             String
+  titleEn             String
+  slug                String      @unique
+  descriptionTa       String     
+  descriptionEn       String     
+  startDate           DateTime
+  endDate             DateTime?
+  venue               String?
+  status              EventStatus @default(UPCOMING)
+  categoryId          String?
+  featuredImage       String?
+  registrationEnabled Boolean     @default(false)
+  qrCodeEnabled       Boolean     @default(false)
+  reportUrl           String?
+  createdById         String
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  category      Category?      @relation(fields: [categoryId], references: [id])
+  createdBy     User           @relation("EventCreator", fields: [createdById], references: [id])
+  registrations Registration[]
+  albums        GalleryAlbum[]
+
+  @@map("events")
+}
+
+model Registration {
+  id        String   @id @default(cuid())
+  eventId   String
+  userId    String?
+  name      String
+  email     String
+  phone     String?
+  qrCode    String?  @unique
+  checkedIn Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User? @relation(fields: [userId], references: [id])
+
+  @@map("registrations")
+}
+
+model GalleryAlbum {
+  id          String   @id @default(cuid())
+  titleTa     String
+  titleEn     String
+  slug        String   @unique
+  description String?
+  eventId     String?
+  coverImage  String?
+  visibility  String   @default("public")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  event Event?      @relation(fields: [eventId], references: [id])
+  media MediaItem[]
+
+  @@map("gallery_albums")
+}
+
+model MediaItem {
+  id           String    @id @default(cuid())
+  albumId      String?
+  type         MediaType @default(IMAGE)
+  url          String
+  thumbnailUrl String?
+  title        String?
+  altText      String?
+  uploadedById String
+  createdAt    DateTime  @default(now())
+
+  album      GalleryAlbum? @relation(fields: [albumId], references: [id])
+  uploadedBy User          @relation(fields: [uploadedById], references: [id])
+
+  @@map("media_items")
+}
+
+model Download {
+  id           String   @id @default(cuid())
+  titleTa      String
+  titleEn      String
+  category     String
+  fileUrl      String
+  fileSize     Int?
+  visibility   String   @default("public")
+  uploadedById String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  uploadedBy User @relation(fields: [uploadedById], references: [id])
+
+  @@map("downloads")
+}
+
+model Achievement {
+  id            String           @id @default(cuid())
+  titleTa       String
+  titleEn       String
+  descriptionTa String?         
+  descriptionEn String?         
+  type          AchievementType  @default(OTHER)
+  level         AchievementLevel @default(SCHOOL)
+  studentName   String?
+  year          Int
+  imageUrl      String?
+  createdById   String
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  createdBy User @relation(fields: [createdById], references: [id])
+
+  @@map("achievements")
+}
+
+model Club {
+  id              String   @id @default(cuid())
+  nameTa          String
+  nameEn          String
+  description     String? 
+  teacherInCharge String?
+  logo            String?
+  status          String   @default("active")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("clubs")
+}
+
+model SportsMeet {
+  id        String           @id @default(cuid())
+  title     String
+  year      Int
+  startDate DateTime
+  endDate   DateTime?
+  status    SportsMeetStatus @default(UPCOMING)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  events SportsEvent[]
+  houses House[]
+
+  @@map("sports_meets")
+}
+
+model House {
+  id              String   @id @default(cuid())
+  sportsMeetId    String
+  name            String
+  color           String
+  logo            String?
+  captain         String?
+  teacherInCharge String?
+  totalPoints     Int      @default(0)
+  createdAt       DateTime @default(now())
+
+  sportsMeet SportsMeet     @relation(fields: [sportsMeetId], references: [id], onDelete: Cascade)
+  results    SportsResult[]
+
+  @@map("houses")
+}
+
+model PointRule {
+  id           String   @id @default(cuid())
+  name         String
+  firstPoints  Int      @default(5)
+  secondPoints Int      @default(3)
+  thirdPoints  Int      @default(1)
+  createdAt    DateTime @default(now())
+
+  sportsEvents SportsEvent[]
+
+  @@map("point_rules")
+}
+
+model SportsEvent {
+  id           String            @id @default(cuid())
+  sportsMeetId String
+  name         String
+  category     String
+  ageGroup     String?
+  gender       String?
+  venue        String?
+  startTime    DateTime?
+  status       SportsEventStatus @default(SCHEDULED)
+  pointRuleId  String?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  sportsMeet SportsMeet     @relation(fields: [sportsMeetId], references: [id], onDelete: Cascade)
+  pointRule  PointRule?     @relation(fields: [pointRuleId], references: [id])
+  results    SportsResult[]
+
+  @@map("sports_events")
+}
+
+model SportsResult {
+  id            String   @id @default(cuid())
+  sportsEventId String
+  place         Int
+  studentName   String
+  houseId       String
+  performance   String?
+  points        Int      @default(0)
+  remarks       String?
+  createdAt     DateTime @default(now())
+
+  sportsEvent SportsEvent @relation(fields: [sportsEventId], references: [id], onDelete: Cascade)
+  house       House       @relation(fields: [houseId], references: [id])
+
+  @@map("sports_results")
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String  
+  updatedAt DateTime @updatedAt
+
+  @@map("settings")
+}
+
+model ActivityLog {
+  id         String   @id @default(cuid())
+  userId     String
+  action     String
+  entityType String?
+  entityId   String?
+  metadata   Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("activity_logs")
+}
+
+model AIRequest {
+  id        String     @id @default(cuid())
+  userId    String
+  provider  AIProvider
+  model     String
+  taskType  AITaskType
+  input     Json
+  output    Json?
+  status    String     @default("pending")
+  createdAt DateTime   @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("ai_requests")
+}

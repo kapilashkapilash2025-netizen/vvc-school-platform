@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# VVC - Vavuniya Vipulanantha College
+## வவுனியா விபுலாநந்தா கல்லூரி
 
-## Getting Started
+**Official School Digital Platform** — Production-ready, professional school website.
 
-First, run the development server:
+---
+
+## Quick Start
 
 ```bash
+npm install
+cp .env.example .env      # Edit with your DB credentials
+npx prisma generate
+npm run db:migrate         # Requires PostgreSQL
+npm run seed
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Local URLs:**
+- Main Website: http://localhost:3000
+- Admin Dashboard: http://localhost:3000/admin
+- Sports: http://localhost:3000/sports
+- Live Scoreboard: http://localhost:3000/sports/live
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Admin Credentials (after seeding)
 
-## Learn More
+| Role | Email | Password |
+|------|-------|----------|
+| Super Admin | admin@vvc.sch.lk | admin@VVC2026! |
+| Principal | principal@vvc.sch.lk | principal@VVC2026! |
+| Teacher Admin | teacher@vvc.sch.lk | teacher@VVC2026! |
 
-To learn more about Next.js, take a look at the following resources:
+**Change all passwords before going live!**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Stack
 
-## Deploy on Vercel
+- Next.js 16 (App Router) + TypeScript
+- Tailwind CSS 4
+- PostgreSQL + Prisma ORM 7
+- NextAuth.js v5 (authentication)
+- AI: OpenAI / Anthropic / Gemini / Mock (configurable)
+- Deployment: Vercel + Supabase + Cloudflare
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Key Features
+
+- Bilingual Tamil + English content
+- Public website: Home, About, News, Notices, Events, Gallery, Downloads, Achievements, Sports, Contact
+- Admin CMS with role-based access (7 roles)
+- Content workflow: Draft → Review → Approved → Published
+- Sports system: Houses, Events, Live Scoreboard, Projector Mode, Point Tracking
+- AI Tools: Post Writer, Notice Writer, Translation, Sports Summary
+- Mobile-first responsive design
+- Maroon + Gold brand colors
+
+---
+
+## School
+
+Vavuniya Vipulanantha College | School No. 1302006 | Vavuniya South Education Zone  
+Principal: Mrs. Gnanamathi | Phone: +94 242 221 988 | Email: vipulananthacollege@yahoo.com  
+Motto: "கேடில் செல்வம் கல்வி"
