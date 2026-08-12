@@ -30,6 +30,18 @@ export const metadata: Metadata = {
     siteName: SCHOOL.nameEn,
     title: SCHOOL.nameEn,
     description: `Official website of ${SCHOOL.nameEn}, Vavuniya, Sri Lanka`,
+    images: [
+      {
+        url: "/images/vvc-logo.png",
+        width: 512,
+        height: 512,
+        alt: `${SCHOOL.nameEn} Logo`,
+      },
+    ],
+  },
+  icons: {
+    icon: "/images/vvc-logo.png",
+    apple: "/images/vvc-logo.png",
   },
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
 };

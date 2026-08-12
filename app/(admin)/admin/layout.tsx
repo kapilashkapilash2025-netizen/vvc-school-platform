@@ -11,7 +11,7 @@ import {
   ChevronRight,
   Download,
   Home,
-  Image,
+  Image as ImageIcon,
   LayoutDashboard,
   LogOut,
   Settings,
@@ -28,7 +28,7 @@ const navItems = [
   { href: "/admin/posts", label: "Posts", icon: BookOpen },
   { href: "/admin/notices", label: "Notices", icon: Bell },
   { href: "/admin/events", label: "Events", icon: Calendar },
-  { href: "/admin/gallery", label: "Gallery", icon: Image },
+  { href: "/admin/gallery", label: "Gallery", icon: ImageIcon },
   { href: "/admin/downloads", label: "Downloads", icon: Download },
   { href: "/admin/achievements", label: "Achievements", icon: Award },
   { href: "/admin/sports", label: "Sports", icon: Trophy },
@@ -51,9 +51,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       )}>
         {/* Logo */}
         <div className="flex items-center gap-3 px-4 py-5 border-b border-gray-800">
-          <div className="h-8 w-8 rounded-lg bg-[#8B0000] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-            VVC
-          </div>
+          <img src="/images/vvc-logo.png" alt="VVC Logo" style={{width: "32px", height: "32px"}} className="flex-shrink-0" />
           {!collapsed && (
             <div className="min-w-0">
               <div className="text-white font-bold text-sm truncate">VVC Admin</div>

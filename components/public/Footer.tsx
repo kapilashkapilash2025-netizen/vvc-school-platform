@@ -12,9 +12,7 @@ export function Footer() {
         {/* School info */}
         <div>
           <div className="flex items-center gap-3 mb-4">
-            <div className="h-12 w-12 rounded-full bg-[#8B0000] flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
-              VVC
-            </div>
+            <img src="/images/vvc-logo.png" alt="VVC Logo" style={{width: "48px", height: "48px"}} className="flex-shrink-0" />
             <div>
               <div className="text-white font-bold text-base font-tamil">{SCHOOL.nameTa}</div>
               <div className="text-gray-400 text-xs">{SCHOOL.nameEn}</div>

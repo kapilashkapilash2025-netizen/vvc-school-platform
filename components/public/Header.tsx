@@ -7,6 +7,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
+
 const navLinks = [
   { href: "/", label: "Home" },
   {
@@ -80,12 +81,10 @@ export function Header() {
       {/* Logo bar */}
       <div className="bg-white border-b border-gray-100 py-3 px-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-          <Link href="/" className="flex items-center gap-4">
-            <div className="h-16 w-16 rounded-full bg-[#8B0000] flex items-center justify-center text-white font-bold text-xl flex-shrink-0 shadow-md">
-              VVC
-            </div>
+          <Link href="/" className="flex items-center gap-3">
+            <img src="/images/vvc-logo.png" alt="VVC Logo" style={{width: "60px", height: "60px"}} className="flex-shrink-0" />
             <div>
-              <div className="text-[#8B0000] font-bold text-xl leading-tight font-tamil">
+              <div className="text-[#8B0000] font-bold text-lg leading-tight font-tamil">
                 {SCHOOL.nameTa}
               </div>
               <div className="text-gray-700 font-semibold text-sm leading-tight">
